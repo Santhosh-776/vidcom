@@ -68,7 +68,6 @@ const CallContent = ({ callId }: { callId: string }) => {
     const { microphone, hasBrowserPermission: hasMicPermission } =
         useMicrophoneState();
     const [callInfo, _setCallInfo] = useState({ id: callId });
-    const [copySuccess, setCopySuccess] = useState(false);
 
     useEffect(() => {
         const enableDevices = async () => {
@@ -89,19 +88,6 @@ const CallContent = ({ callId }: { callId: string }) => {
 
         enableDevices();
     }, [camera, microphone, hasCameraPermission, hasMicPermission]);
-
-    const copyCallLink = () => {
-        const callLink = `${window.location.origin}/call/${callId}`;
-        navigator.clipboard
-            .writeText(callLink)
-            .then(() => {
-                setCopySuccess(true);
-                setTimeout(() => setCopySuccess(false), 2000);
-            })
-            .catch((err) => {
-                console.error("Failed to copy: ", err);
-            });
-    };
 
     if (callingState !== CallingState.JOINED) {
         return (
