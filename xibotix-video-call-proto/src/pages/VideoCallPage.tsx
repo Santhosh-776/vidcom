@@ -27,16 +27,22 @@ const CustomCallControls = () => {
 
     return (
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="flex items-center gap-4 bg-black/30 backdrop-blur-lg px-6 py-4 rounded-full shadow-lg">
-                <ToggleAudioPublishingButton />
-                <ToggleVideoPublishingButton />
-                <ScreenShareButton />
+            <div className="flex items-center gap-5 bg-black/60 backdrop-blur-lg px-8 py-4 rounded-xl shadow-xl border border-white/10">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
+                    <ToggleAudioPublishingButton />
+                </div>
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
+                    <ToggleVideoPublishingButton />
+                </div>
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
+                    <ScreenShareButton />
+                </div>
                 <button
                     onClick={handleEndCall}
-                    className="p-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    className="flex items-center justify-center w-12 h-12 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all focus:outline-none shadow-lg hover:shadow-red-500/30"
                     aria-label="End call">
                     <svg
-                        className="w-5 h-5"
+                        className="w-6 h-6"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -67,15 +73,22 @@ const CallContent = ({ callId }: { callId: string }) => {
     useEffect(() => {
         const enableDevices = async () => {
             try {
-                await camera.enable();
-                await microphone.enable();
+                console.log("Enabling camera and microphone...");
+                if (hasCameraPermission) {
+                    await camera.enable();
+                    console.log("Camera enabled successfully");
+                }
+                if (hasMicPermission) {
+                    await microphone.enable();
+                    console.log("Microphone enabled successfully");
+                }
             } catch (err) {
                 console.error("Error enabling devices:", err);
             }
         };
 
         enableDevices();
-    }, [camera, microphone]);
+    }, [camera, microphone, hasCameraPermission, hasMicPermission]);
 
     const copyCallLink = () => {
         const callLink = `${window.location.origin}/call/${callId}`;
@@ -117,27 +130,62 @@ const CallContent = ({ callId }: { callId: string }) => {
     return (
         <StreamTheme>
             <div className="relative h-screen bg-gradient-to-b from-gray-900 to-black">
-                {/* Logo */}
-                <div className="absolute top-4 left-4 z-10 flex items-center">
-                    <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-                        XiboTix
-                    </span>
-                </div>
-
-                <div className="absolute top-4 right-4 z-10 bg-black/30 backdrop-blur-md rounded-full px-4 py-2 flex items-center">
+                {/* Enhanced Logo */}
+                <div className="absolute top-4 left-4 z-10 flex items-center bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-white/10">
                     <div className="flex items-center">
-                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                        <p className="text-white text-sm font-medium">
-                            Call ID: {callInfo.id.substring(0, 8)}...
-                        </p>
+                        <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                            XiboTix
+                        </span>
+                        <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-white/10 rounded text-white">
+                            LIVE
+                        </span>
                     </div>
                 </div>
 
-                {/* Copy Link Button */}
-                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
+                {/* Enhanced Call ID display */}
+                <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-md rounded-lg px-5 py-3 flex items-center shadow-lg border border-white/10">
+                    <div className="flex items-center">
+                        <div className="flex-shrink-0 h-3 w-3 bg-green-500 rounded-full animate-pulse mr-3"></div>
+                        <div>
+                            <p className="text-white text-xs font-medium uppercase tracking-wider mb-0.5 opacity-80">
+                                Active Session
+                            </p>
+                            <p className="text-white text-sm font-bold tracking-wide">
+                                {callInfo.id.substring(0, 12)}
+                                <span className="text-white/50">...</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right side actions */}
+                <div className="absolute top-20 right-4 z-10 flex flex-col gap-3">
                     <button
-                        onClick={copyCallLink}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full flex items-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        onClick={() => {
+                            const url = `${window.location.origin}/call/${callId}`;
+                            const message = `Join my XiboTix video meeting: ${url}`;
+                            if (navigator.share) {
+                                navigator
+                                    .share({
+                                        title: "XiboTix Video Meeting",
+                                        text: message,
+                                        url: url,
+                                    })
+                                    .catch((err) => {
+                                        console.error("Error sharing:", err);
+                                        // Fallback to clipboard if sharing fails
+                                        navigator.clipboard.writeText(message);
+                                        alert(
+                                            "Invite link copied to clipboard!"
+                                        );
+                                    });
+                            } else {
+                                // Fallback for browsers that don't support Web Share API
+                                navigator.clipboard.writeText(message);
+                                alert("Invite link copied to clipboard!");
+                            }
+                        }}
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 font-medium">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-5 w-5"
@@ -148,15 +196,41 @@ const CallContent = ({ callId }: { callId: string }) => {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                             />
                         </svg>
-                        {copySuccess ? "Copied!" : "Copy Link"}
+                        Invite Participants
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText(callInfo.id);
+                            alert("Call ID copied to clipboard!");
+                        }}
+                        className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-lg border border-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 font-medium">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            />
+                        </svg>
+                        Copy Call ID
                     </button>
                 </div>
 
                 <div className="absolute inset-0">
-                    <SpeakerLayout participantsBarPosition="bottom" />
+                    <SpeakerLayout
+                        participantsBarPosition="bottom"
+                        mirrorLocalParticipantVideo={true}
+                        pageArrowsVisible={true}
+                    />
                 </div>
 
                 <CustomCallControls />
@@ -212,7 +286,19 @@ export default function VideoCallPage() {
 
                     const callInstance = streamClient.call("default", callId);
 
+                    try {
+                        // First try to get the call, if it exists already
+                        await callInstance.get();
+                        console.log("Call exists, joining...");
+                    } catch (err) {
+                        // If the call doesn't exist, create it
+                        console.log("Call doesn't exist, creating...");
+                        await callInstance.getOrCreate();
+                    }
+
+                    // Join with create: true to ensure the call exists
                     await callInstance.join({ create: true });
+                    console.log("Successfully joined call:", callId);
 
                     setCall(callInstance);
                     setIsLoading(false);

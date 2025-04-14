@@ -132,3 +132,41 @@ html {
         transform: rotate(360deg);
     }
 }
+
+/* Participant Context Menu Overrides */
+.str-video__participant-actions-menu {
+    color: white !important;
+}
+
+.str-video__participant-actions-menu button,
+.str-video__participant-actions-menu span,
+.str-video__participant-actions-menu div {
+    color: white !important;
+}
+
+.str-video__menu-container {
+    color: white !important;
+    background-color: rgba(34, 38, 45, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.str-video__menu-container .str-video__menu-item {
+    color: white !important;
+}
+
+.str-video__menu-container .str-video__menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.str-video__menu-container .str-video__menu-item-label {
+    color: white !important;
+}
+
+/* All text within context menus */
+.str-video__popover * {
+    color: white !important;
+}
+
+.str-video__menu * {
+    color: white !important;
+}
