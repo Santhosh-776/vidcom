@@ -8,7 +8,11 @@ const { initializeApp, cert } = require("firebase-admin/app"); // Use this impor
 
 const app = express();
 
-// Define serviceAccount using environment variables
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://xibotix-web-proto.vercel.app/",
+];
+
 const serviceAccount = {
     type: process.env.FIREBASE_TYPE,
     project_id: process.env.FIREBASE_PROJECT_ID,
@@ -23,15 +27,13 @@ const serviceAccount = {
     client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
 };
 
-// Initialize Firebase with environment variables (ensure this is called only once)
 initializeApp({
     credential: cert(serviceAccount),
 });
 
-// Configure CORS
 app.use(
     cors({
-        origin: "http://localhost:5173", // Vite's default port
+        origin: allowedOrigins,
         methods: ["POST", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
     })
@@ -39,13 +41,11 @@ app.use(
 
 app.use(express.json());
 
-// Initialize StreamChat
 const serverClient = StreamChat.getInstance(
     process.env.STREAM_API_KEY,
     process.env.STREAM_API_SECRET
 );
 
-// Authentication middleware
 const authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
@@ -63,7 +63,6 @@ const authenticateToken = async (req, res, next) => {
     }
 };
 
-// Token generation route
 app.post("/token", authenticateToken, async (req, res) => {
     try {
         const { uid, email } = req.user;
@@ -82,7 +81,6 @@ app.post("/token", authenticateToken, async (req, res) => {
     }
 });
 
-// Start the server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
