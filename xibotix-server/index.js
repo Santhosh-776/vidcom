@@ -10,7 +10,7 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://xibotix-web-proto.vercel.app/",
+    "https://xibotix-web-proto.vercel.app",
 ];
 
 const serviceAccount = {
@@ -34,8 +34,9 @@ initializeApp({
 app.use(
     cors({
         origin: allowedOrigins,
-        methods: ["POST", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "x-requested-with"],
+        credentials: true,
     })
 );
 
