@@ -1,6 +1,6 @@
 import { auth } from "../utils/firebase";
 
-const API_URL = "http://localhost:3001";
+const API_URL = "https://xibotix-server.onrender.com";
 
 export interface StreamCredentials {
     token: string;

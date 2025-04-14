@@ -43,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log("AuthProvider useEffect running...");
         let unsubscribe: () => void;
 
-        // Set up auth state listener
         unsubscribe = onAuthStateChanged(auth, (user) => {
             console.log(
                 "Auth state changed:",
