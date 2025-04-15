@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     CallingState,
-    SpeakerLayout,
     StreamTheme,
     StreamVideoClient,
     useCallStateHooks,
@@ -12,37 +11,55 @@ import {
     ScreenShareButton,
     StreamCall,
     StreamVideo,
+    useCall,
 } from "@stream-io/video-react-sdk";
 import { useAuth } from "../context/AuthContext";
 import { getStreamCredentials } from "../services/streamService";
+import { CustomVideoLayout } from "../components/CustomVideoLayout";
 
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 
 const CustomCallControls = () => {
     const navigate = useNavigate();
+    const [isRecording, setIsRecording] = useState(false);
+    const call = useCall();
 
     const handleEndCall = () => {
         navigate("/");
     };
 
+    const toggleRecording = async () => {
+        try {
+            if (isRecording) {
+                await call?.stopRecording();
+            } else {
+                await call?.startRecording();
+            }
+            setIsRecording(!isRecording);
+        } catch (error) {
+            console.error("Error toggling recording:", error);
+        }
+    };
+
     return (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-            <div className="flex items-center gap-5 bg-black/60 backdrop-blur-lg px-8 py-4 rounded-xl shadow-xl border border-white/10">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
-                    <ToggleAudioPublishingButton />
-                </div>
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
-                    <ToggleVideoPublishingButton />
-                </div>
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 transition-all cursor-pointer">
-                    <ScreenShareButton />
-                </div>
+        <div className="fixed bottom-20 sm:bottom-8 left-0 right-0 flex justify-center z-50">
+            <div className="flex items-center gap-5 bg-black/80 backdrop-blur-lg px-5 py-3 rounded-xl shadow-xl">
+                <ToggleAudioPublishingButton />
+                <ToggleVideoPublishingButton />
+                <ScreenShareButton />
                 <button
-                    onClick={handleEndCall}
-                    className="flex items-center justify-center w-12 h-12 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all focus:outline-none shadow-lg hover:shadow-red-500/30"
-                    aria-label="End call">
+                    onClick={toggleRecording}
+                    className={`flex items-center justify-center w-11 h-11 rounded-full transition-all focus:outline-none ${
+                        isRecording
+                            ? "bg-red-500 text-white animate-pulse"
+                            : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                    aria-label={
+                        isRecording ? "Stop recording" : "Start recording"
+                    }>
                     <svg
-                        className="w-6 h-6"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor">
@@ -50,7 +67,25 @@ const CustomCallControls = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                    </svg>
+                </button>
+                <button
+                    onClick={handleEndCall}
+                    className="flex items-center justify-center w-11 h-11 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all focus:outline-none"
+                    aria-label="End call">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                         />
                     </svg>
                 </button>
@@ -117,7 +152,7 @@ const CallContent = ({ callId }: { callId: string }) => {
         <StreamTheme>
             <div className="relative h-screen bg-gradient-to-b from-gray-900 to-black">
                 {/* Enhanced Logo */}
-                <div className="absolute top-4 left-4 z-10 flex items-center bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-white/10">
+                <div className="absolute top-4 left-4 z-40 flex flex-col bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-white/10 mobile-header">
                     <div className="flex items-center">
                         <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
                             XiboTix
@@ -126,10 +161,103 @@ const CallContent = ({ callId }: { callId: string }) => {
                             LIVE
                         </span>
                     </div>
+                    <div className="mt-2 w-full group">
+                        <button className="w-full flex items-center justify-center gap-2 bg-black/60 hover:bg-black/80 backdrop-blur-md rounded-lg shadow-lg py-1.5 px-3 text-white text-sm transition-all">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={1.5}
+                                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                                />
+                            </svg>
+                            Share
+                        </button>
+                        <div className="absolute left-0 top-full mt-2 bg-black/80 backdrop-blur-md rounded-lg shadow-lg border border-white/10 p-2 w-52 transition-all scale-95 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:pointer-events-auto">
+                            <div className="flex flex-col gap-2">
+                                <button
+                                    onClick={() => {
+                                        const url = `${window.location.origin}/call/${callId}`;
+                                        const message = `Join my XiboTix video meeting: ${url}`;
+                                        if (navigator.share) {
+                                            navigator
+                                                .share({
+                                                    title: "XiboTix Video Meeting",
+                                                    text: message,
+                                                    url: url,
+                                                })
+                                                .catch((err) => {
+                                                    console.error(
+                                                        "Error sharing:",
+                                                        err
+                                                    );
+                                                    navigator.clipboard.writeText(
+                                                        message
+                                                    );
+                                                    alert(
+                                                        "Invite link copied to clipboard!"
+                                                    );
+                                                });
+                                        } else {
+                                            navigator.clipboard.writeText(
+                                                message
+                                            );
+                                            alert(
+                                                "Invite link copied to clipboard!"
+                                            );
+                                        }
+                                    }}
+                                    className="flex items-center gap-2 text-white text-sm hover:bg-white/10 p-2 rounded transition-colors w-full text-left">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={1.5}
+                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                        />
+                                    </svg>
+                                    Share Invite Link
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(
+                                            callInfo.id
+                                        );
+                                        alert("Call ID copied to clipboard!");
+                                    }}
+                                    className="flex items-center gap-2 text-white text-sm hover:bg-white/10 p-2 rounded transition-colors w-full text-left">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={1.5}
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                                        />
+                                    </svg>
+                                    Copy Call ID
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Enhanced Call ID display */}
-                <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-md rounded-lg px-5 py-3 flex items-center shadow-lg border border-white/10">
+                <div className="absolute top-4 right-4 z-40 bg-black/50 backdrop-blur-md rounded-lg px-5 py-3 flex items-center shadow-lg border border-white/10 mobile-header">
                     <div className="flex items-center">
                         <div className="flex-shrink-0 h-3 w-3 bg-green-500 rounded-full animate-pulse mr-3"></div>
                         <div>
@@ -144,81 +272,12 @@ const CallContent = ({ callId }: { callId: string }) => {
                     </div>
                 </div>
 
-                {/* Right side actions */}
-                <div className="absolute top-20 right-4 z-10 flex flex-col gap-3">
-                    <button
-                        onClick={() => {
-                            const url = `${window.location.origin}/call/${callId}`;
-                            const message = `Join my XiboTix video meeting: ${url}`;
-                            if (navigator.share) {
-                                navigator
-                                    .share({
-                                        title: "XiboTix Video Meeting",
-                                        text: message,
-                                        url: url,
-                                    })
-                                    .catch((err) => {
-                                        console.error("Error sharing:", err);
-                                        // Fallback to clipboard if sharing fails
-                                        navigator.clipboard.writeText(message);
-                                        alert(
-                                            "Invite link copied to clipboard!"
-                                        );
-                                    });
-                            } else {
-                                // Fallback for browsers that don't support Web Share API
-                                navigator.clipboard.writeText(message);
-                                alert("Invite link copied to clipboard!");
-                            }
-                        }}
-                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 font-medium">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                            />
-                        </svg>
-                        Invite Participants
-                    </button>
-
-                    <button
-                        onClick={() => {
-                            navigator.clipboard.writeText(callInfo.id);
-                            alert("Call ID copied to clipboard!");
-                        }}
-                        className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-lg border border-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 font-medium">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                        </svg>
-                        Copy Call ID
-                    </button>
+                {/* Main video content - higher z-index to ensure it's above other elements */}
+                <div className="absolute inset-0 z-5">
+                    <CustomVideoLayout />
                 </div>
 
-                <div className="absolute inset-0">
-                    <SpeakerLayout
-                        participantsBarPosition="bottom"
-                        mirrorLocalParticipantVideo={true}
-                        pageArrowsVisible={true}
-                    />
-                </div>
-
+                {/* Call Controls - highest z-index */}
                 <CustomCallControls />
             </div>
         </StreamTheme>
@@ -273,16 +332,13 @@ export default function VideoCallPage() {
                     const callInstance = streamClient.call("default", callId);
 
                     try {
-                        // First try to get the call, if it exists already
                         await callInstance.get();
                         console.log("Call exists, joining...");
                     } catch (err) {
-                        // If the call doesn't exist, create it
                         console.log("Call doesn't exist, creating...");
                         await callInstance.getOrCreate();
                     }
 
-                    // Join with create: true to ensure the call exists
                     await callInstance.join({ create: true });
                     console.log("Successfully joined call:", callId);
 

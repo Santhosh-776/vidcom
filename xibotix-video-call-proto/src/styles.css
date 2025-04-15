@@ -44,7 +44,6 @@ html {
     z-index: 10;
 }
 
-/* Hangup Button */
 .hangup-button {
     background-color: #e53935;
     color: white;
@@ -169,4 +168,196 @@ html {
 
 .str-video__menu * {
     color: white !important;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    /* Adjust UI elements for mobile */
+    .mobile-controls {
+        bottom: 16px !important;
+        padding: 8px !important;
+        z-index: 30 !important;
+        width: 60% !important;
+    }
+
+    .mobile-controls-container {
+        gap: 8px !important;
+        padding: 12px 16px !important;
+    }
+
+    .mobile-controls-button {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .mobile-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        padding: 8px !important;
+    }
+
+    .mobile-actions {
+        bottom: 70px !important;
+        padding: 0 8px !important;
+        gap: 8px !important;
+        justify-content: center !important;
+        width: 100% !important;
+        z-index: 25 !important;
+    }
+
+    .mobile-actions button {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        flex: 1 !important;
+        max-width: 150px !important;
+    }
+
+    /* Even smaller local preview on mobile with higher z-index */
+    .local-participant-preview {
+        width: 80px !important;
+        height: 112px !important;
+        max-width: 80px !important;
+        max-height: 112px !important;
+        bottom: 135px !important;
+        right: 8px !important;
+        z-index: 20 !important;
+    }
+}
+
+/* Style for participant video elements - moved outside media query */
+.video-participant-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.local-participant-preview {
+    position: absolute;
+    bottom: 100px;
+    right: 16px;
+    width: 140px;
+    height: 180px;
+    max-width: 140px;
+    max-height: 180px;
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 10;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.local-participant-preview > div {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+}
+
+.local-participant-preview:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Custom ParticipantView styles */
+.str-video__participant-view {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.local-participant-preview .str-video__participant-view {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+.local-participant-preview .str-video__participant-view video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* Fix for Container growth */
+.str-video__video-container {
+    width: auto !important;
+    height: auto !important;
+    min-width: unset !important;
+    min-height: unset !important;
+}
+
+/* Custom participant bar position */
+.str-video__participant-bar {
+    gap: 8px !important;
+    padding: 8px !important;
+}
+
+/* Share dropdown styles */
+.share-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.share-icon {
+    background: rgba(0, 0, 0, 0.4);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.share-icon:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.share-dropdown-content {
+    display: none;
+    position: absolute;
+    top: 45px;
+    left: 0;
+    background-color: rgba(34, 38, 45, 0.95);
+    min-width: 180px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    z-index: 45;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.share-dropdown:hover .share-dropdown-content {
+    display: block;
+}
+
+.share-dropdown-item {
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.share-dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.share-dropdown-item svg {
+    width: 18px;
+    height: 18px;
 }

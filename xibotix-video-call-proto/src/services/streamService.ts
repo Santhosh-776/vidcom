@@ -1,6 +1,6 @@
 import { auth } from "../utils/firebase";
 
-const API_URL = "https://xibotix-server.onrender.com";
+const API_URL = "http://localhost:3001";
 
 export interface StreamCredentials {
     token: string;
@@ -15,7 +15,7 @@ export async function getStreamCredentials(): Promise<StreamCredentials> {
             throw new Error("User must be logged in");
         }
 
-        const idToken = await user.getIdToken(true); // Force token refresh
+        const idToken = await user.getIdToken(true);
         const response = await fetch(`${API_URL}/token`, {
             method: "POST",
             headers: {
