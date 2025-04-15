@@ -108,7 +108,7 @@ export const CustomVideoLayout = () => {
             <div
                 className={
                     isMobile
-                        ? "fixed bottom-36 left-0 right-0 flex justify-center gap-2 overflow-x-auto px-4 z-20"
+                        ? "fixed bottom-40 left-0 right-0 flex justify-center gap-2 overflow-x-auto px-4 z-20"
                         : "flex flex-row absolute bottom-32 right-4 z-10 gap-2"
                 }>
                 {otherParticipants.map((participant) => (
