@@ -180,7 +180,7 @@ const CallContent = ({ callId }: { callId: string }) => {
                 <div className="absolute top-4 left-4 z-40 flex flex-col bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg shadow-lg border border-white/10 mobile-header">
                     <div className="flex items-center">
                         <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-                            XiboTix
+                            Xitalk
                         </span>
                         <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-white/10 rounded text-white">
                             LIVE
@@ -230,11 +230,11 @@ const CallContent = ({ callId }: { callId: string }) => {
                                 <button
                                     onClick={() => {
                                         const url = `${window.location.origin}/call/${callId}`;
-                                        const message = `Join my XiboTix video meeting: ${url}`;
+                                        const message = `Join my Xitalk video meeting: ${url}`;
                                         if (navigator.share) {
                                             navigator
                                                 .share({
-                                                    title: "XiboTix Video Meeting",
+                                                    title: "Xitalk Video Meeting",
                                                     text: message,
                                                     url: url,
                                                 })
