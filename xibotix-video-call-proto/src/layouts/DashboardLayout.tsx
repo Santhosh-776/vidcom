@@ -25,7 +25,7 @@ export default function DashboardLayout() {
                                 to="/"
                                 className="flex-shrink-0">
                                 <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                                    XiboTix
+                                    XiTalk
                                 </span>
                             </Link>
                         </div>
