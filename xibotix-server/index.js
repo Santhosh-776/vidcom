@@ -10,7 +10,7 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://vidcom-77.vercel.app/",
+    "https://vidcom-77.vercel.app",
 ];
 
 const serviceAccount = {
