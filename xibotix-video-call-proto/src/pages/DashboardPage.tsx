@@ -8,7 +8,6 @@ export default function DashboardPage() {
     const navigate = useNavigate();
 
     const handleCreateCall = () => {
-        // Generate a random call ID
         const randomId = Math.random().toString(36).substring(2, 15);
         navigate(`/call/${randomId}`);
     };
@@ -26,7 +25,7 @@ export default function DashboardPage() {
         <div>
             <header className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900">
-                    Welcome to XiboTix
+                    Welcome to XiTalk
                 </h1>
                 <p className="mt-2 text-gray-600 max-w-3xl">
                     Connect with others through high-quality, secure video
