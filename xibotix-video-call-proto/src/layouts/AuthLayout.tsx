@@ -6,7 +6,7 @@ export default function AuthLayout() {
             <div className="max-w-md w-full space-y-8">
                 <div className="text-center">
                     <h1 className="text-4xl font-extrabold text-white tracking-tight">
-                        Xibotix
+                        XiTalk
                     </h1>
                     <p className="mt-2 text-white/80 text-lg">
                         Secure Video Conferencing
