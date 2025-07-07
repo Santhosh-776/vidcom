@@ -155,7 +155,7 @@ export default function DashboardPage() {
                                 <a
                                     href="mailto:support@xibotix.com"
                                     className="font-medium underline">
-                                    support@xibotix.com
+                                    support.com
                                 </a>
                                 .
                             </p>
